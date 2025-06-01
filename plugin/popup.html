@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Assistant</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>AI Productivity Assistant</h1>
+    <div id="app-content">
+        <div class="section">
+            <h2>Translate Text</h2>
+            <textarea id="text-to-translate" rows="4" placeholder="Enter text to translate..."></textarea>
+            <input type="text" id="target-language" placeholder="Enter target language (e.g., Spanish)">
+            <button id="translate-button">Translate</button>
+            <div id="translation-result" class="result-area"></div>
+        </div>
+        <hr>
+        <div class="section">
+            <h2>Convert Document (Placeholder)</h2>
+            <input type="file" id="document-file-input">
+            <button id="convert-document-button">Upload and Analyze</button>
+            <div id="document-conversion-result" class="result-area"></div>
+        </div>
+        <hr>
+        <div class="section">
+            <h2>Intelligent Search</h2>
+            <input type="text" id="search-query-input" placeholder="Enter your search query...">
+            <button id="search-button">Search</button>
+            <div id="search-result" class="result-area"></div>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+</html>
