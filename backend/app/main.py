@@ -1,3 +1,4 @@
+import os
 from flask import Flask, request, jsonify
 from .llm_service import call_llm # Assuming llm_service is in the same directory
 
@@ -19,7 +20,8 @@ def translate_text():
     # Construct a prompt for the LLM
     prompt = f"Translate the following text to {target_language}: {text_to_translate}"
 
-    # Call the LLM service
+    # The llm_service.call_llm function for "translate" expects a prompt
+    # that includes the text and target language directly.
     translated_text = call_llm(prompt=prompt, task="translate")
 
     return jsonify({
@@ -38,23 +40,44 @@ def convert_document_format():
     if file.filename == '':
         return jsonify({"error": "No selected file"}), 400
 
-    # For now, we'll just read a small part of the file content as a placeholder
-    # In a real scenario, you'd save the file, then process it.
-    # For LLM processing, you might extract text first.
-    try:
-        # Read up to 1MB of the file for safety as a placeholder
-        file_content_sample = file.read(1024 * 1024).decode('utf-8', errors='ignore')
-    except Exception as e:
-        return jsonify({"error": f"Error reading file: {str(e)}"}), 500
+    filename = file.filename
+    _ , file_extension = os.path.splitext(filename)
+    file_extension = file_extension.lower()
 
-    # Simulate document analysis using the LLM service
-    # In a real conversion, the prompt would be more specific to the conversion task
-    analysis_result = call_llm(prompt=file_content_sample, task="analyze_document")
+    prompt_content = ""
+    max_file_size_bytes = 2 * 1024 * 1024 # 2MB limit for text extraction
+
+    supported_text_extensions = ['.txt', '.md', '.py', '.js', '.html', '.css', '.csv', '.json', '.xml']
+
+    if file_extension in supported_text_extensions:
+        try:
+            # Read up to max_file_size_bytes + 1 to check if it exceeds the limit
+            file_bytes = file.read(max_file_size_bytes + 1)
+            if len(file_bytes) > max_file_size_bytes:
+                prompt_content = f"File content is too large (over {max_file_size_bytes // (1024*1024)}MB). Processing only the first {max_file_size_bytes // (1024*1024)}MB.\n\n"
+                file_bytes = file_bytes[:max_file_size_bytes]
+
+            prompt_content += file_bytes.decode('utf-8')
+        except UnicodeDecodeError:
+            prompt_content = f"Could not decode the file content as UTF-8. It might be a binary file or use a different text encoding."
+        except Exception as e:
+            return jsonify({"error": f"Error reading file: {str(e)}"}), 500
+    else:
+        prompt_content = (
+            f"Cannot automatically extract text from '{file_extension}' files. "
+            "This service currently supports text-based files like .txt, .md, .py, .js, .html, .css, .csv, .json, .xml. "
+            "Full processing for file types like PDF or DOCX is not yet implemented."
+        )
+
+    # The llm_service.call_llm function for "analyze_document" will prepend
+    # specific instructions to this content.
+    analysis_result = call_llm(prompt=prompt_content, task="analyze_document")
 
     return jsonify({
-        "filename": file.filename,
+        "filename": filename,
         "content_type": file.content_type,
-        "message": "Document received, placeholder analysis performed.",
+        "file_extension": file_extension,
+        "message": "Document processed for analysis.",
         "analysis_preview": analysis_result
     })
 
@@ -66,7 +89,8 @@ def intelligent_search():
 
     query_text = data['query']
 
-    # Call the LLM service for search
+    # The llm_service.call_llm function for "search" will prepend
+    # specific instructions to this query.
     search_results = call_llm(prompt=query_text, task="search")
 
     return jsonify({
