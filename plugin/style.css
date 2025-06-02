@@ -1,0 +1,17 @@
+.result-area {
+    margin-top: 10px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    min-height: 20px;
+}
+.result-area.error {
+    color: red;
+    border-color: red;
+}
+.result-area.success {
+    color: green;
+    border-color: green;
+}
+.result-area.loading {
+    color: #555;
+}
