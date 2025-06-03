@@ -1,20 +1,32 @@
 # OpenAI API Key Requirement:
 # This service requires an OpenAI API key to function.
-# Please obtain a key from OpenAI (https://platform.openai.com/signup/).
-# The key should be set as an environment variable named OPENAI_API_KEY.
-# For example, in your shell:
-# export OPENAI_API_KEY='your_actual_api_key_here'
-# Ensure this key is kept secret and not committed to version control.
+# The API key should be placed in a file named .env in the 'backend' directory.
+# Create this file by copying backend/.env.example to backend/.env and entering your key.
+# Example content for backend/.env:
+# OPENAI_API_KEY='your_actual_api_key_here'
+#
+# The key is loaded from this .env file. If an environment variable OPENAI_API_KEY is
+# also set, it might take precedence depending on the system and python-dotenv behavior (usually, existing env vars are not overwritten by default).
+# Ensure this key is kept secret and the .env file is not committed to version control.
 
 import os
 from openai import OpenAI, APIError
+from dotenv import load_dotenv
+
+# Construct the path to the .env file located in the backend directory
+# __file__ is llm_service.py, dirname(__file__) is app/, dirname(dirname()) is backend/
+dotenv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), '.env')
+load_dotenv(dotenv_path=dotenv_path)
 
 # Initialize the OpenAI client.
 # It's good practice to handle the API key not being set.
 try:
-    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("Warning: OPENAI_API_KEY environment variable not set. LLM calls will fail.")
+    api_key_value = os.environ.get("OPENAI_API_KEY")
+    if not api_key_value:
+        print("Warning: OPENAI_API_KEY not found in environment or .env file. LLM calls will fail.")
+        client = None
+    else:
+        client = OpenAI(api_key=api_key_value)
 except Exception as e:
     print(f"Error initializing OpenAI client: {e}")
     client = None # Ensure client is None if initialization fails
@@ -71,9 +83,9 @@ def call_llm(prompt: str, task: str) -> str:
         return f"An unexpected error occurred: {str(e)}"
 
 if __name__ == '__main__':
-    # Example Usage (Requires OPENAI_API_KEY to be set in environment)
-    if not os.environ.get("OPENAI_API_KEY"):
-        print("Cannot run examples: OPENAI_API_KEY environment variable is not set.")
+    # Example Usage (Requires OPENAI_API_KEY to be set in environment or .env file)
+    if not os.environ.get("OPENAI_API_KEY"): # This check remains valid as dotenv loads it into os.environ
+        print("Cannot run examples: OPENAI_API_KEY environment variable is not set directly or via backend/.env.")
     else:
         print("Attempting example LLM calls...")
         print("\n--- Translation Example ---")

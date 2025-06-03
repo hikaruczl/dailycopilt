@@ -69,16 +69,18 @@ The backend is a Python Flask server that handles LLM interactions.
         pip install -r requirements.txt
         ```
     5.  **Set your OpenAI API Key:**
-        Replace `'your_openai_api_key_here'` with your actual key.
-        ```bash
-        # On macOS/Linux:
-        export OPENAI_API_KEY='your_openai_api_key_here'
-        # On Windows (PowerShell):
-        # $env:OPENAI_API_KEY='your_openai_api_key_here'
-        # On Windows (Command Prompt):
-        # set OPENAI_API_KEY=your_openai_api_key_here
-        ```
-        **Important:** Do not commit your API key. Ensure it's kept secret.
+        The backend requires an OpenAI API key to be configured in a `.env` file.
+        *   Navigate to the `backend/` directory if you are not already there (you should be if following these steps sequentially).
+        *   Copy the example environment file:
+            ```bash
+            cp .env.example .env
+            ```
+        *   Open the newly created `backend/.env` file in a text editor.
+        *   Replace `your_api_key_here` with your actual OpenAI API key. The line should look like:
+            ```
+            OPENAI_API_KEY="sk-YourActualOpenAIKeyHerexxxx"
+            ```
+        **Important:** Ensure this `.env` file (which contains your secret key) is never committed to version control. The project's `.gitignore` file is already configured to ignore `.env` files.
     6.  **Run the Flask server:**
         ```bash
         python -m app.main
