@@ -1,4 +1,41 @@
-document.addEventListener('DOMContentLoaded', function () {
+let backendBaseUrl = 'http://localhost:5000'; // Default value
+
+async function loadBackendConfig() {
+    try {
+        // In extensions, paths are relative to the extension's root if not starting with /
+        // For popup.html, './config.json' might work, but chrome.runtime.getURL is more robust.
+        const response = await fetch(chrome.runtime.getURL('config.json'));
+        if (response.ok) {
+            const config = await response.json();
+            if (config && config.backend_url) {
+                // Basic validation: ensure it's a http/https URL.
+                if (config.backend_url.startsWith('http://') || config.backend_url.startsWith('https://')) {
+                    backendBaseUrl = config.backend_url.replace(/\/+$/, ""); // Remove trailing slashes
+                    console.log('Backend URL loaded from config.json:', backendBaseUrl);
+                } else {
+                    console.warn('Invalid backend_url format in config.json. Must start with http:// or https://. Using default:', backendBaseUrl);
+                }
+            } else {
+                console.warn('config.json found, but backend_url is missing or invalid. Using default:', backendBaseUrl);
+            }
+        } else {
+            // config.json not found is not an error, just use default.
+            if (response.status === 404) {
+                 console.log('config.json not found. Using default backend URL:', backendBaseUrl);
+            } else {
+                 console.warn(`config.json not accessible (status: ${response.status}). Using default backend URL:`, backendBaseUrl);
+            }
+        }
+    } catch (error) {
+        // This catches network errors or if config.json is malformed JSON
+        console.warn('Error loading or parsing config.json. Using default backend URL:', backendBaseUrl, error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function () {
+    await loadBackendConfig(); // Load config first
+
+    // --- Translation ---
     const translateButton = document.getElementById('translate-button');
     const textToTranslateInput = document.getElementById('text-to-translate');
     const targetLanguageInput = document.getElementById('target-language');
@@ -23,7 +60,7 @@ document.addEventListener('DOMContentLoaded', function () {
             translationResultDiv.textContent = 'Translating...';
             translationResultDiv.className = 'result-area loading';
 
-            fetch('http://localhost:5000/api/translate', {
+            fetch(`${backendBaseUrl}/api/translate`, { // MODIFIED URL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -61,7 +98,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error("Translate button not found");
     }
 
-    // Document Conversion Logic
+    // --- Document Conversion ---
     const convertDocumentButton = document.getElementById('convert-document-button');
     const documentFileInput = document.getElementById('document-file-input');
     const documentConversionResultDiv = document.getElementById('document-conversion-result');
@@ -82,9 +119,9 @@ document.addEventListener('DOMContentLoaded', function () {
             const formData = new FormData();
             formData.append('document', file);
 
-            fetch('http://localhost:5000/api/convert-document', {
+            fetch(`${backendBaseUrl}/api/convert-document`, { // MODIFIED URL
                 method: 'POST',
-                body: formData, // No 'Content-Type' header needed for FormData, browser sets it
+                body: formData,
             })
             .then(response => {
                 if (!response.ok) {
@@ -101,7 +138,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
                     documentConversionResultDiv.textContent = resultText;
                     documentConversionResultDiv.className = 'result-area success';
-                    // Clear the file input
                     documentFileInput.value = null;
                 } else if (data.error) {
                     documentConversionResultDiv.textContent = `Error: ${data.error}`;
@@ -121,7 +157,7 @@ document.addEventListener('DOMContentLoaded', function () {
         console.error("Convert document button not found");
     }
 
-    // Intelligent Search Logic
+    // --- Intelligent Search ---
     const searchButton = document.getElementById('search-button');
     const searchQueryInput = document.getElementById('search-query-input');
     const searchResultDiv = document.getElementById('search-result');
@@ -139,7 +175,7 @@ document.addEventListener('DOMContentLoaded', function () {
             searchResultDiv.textContent = 'Searching...';
             searchResultDiv.className = 'result-area loading';
 
-            fetch('http://localhost:5000/api/search', {
+            fetch(`${backendBaseUrl}/api/search`, { // MODIFIED URL
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

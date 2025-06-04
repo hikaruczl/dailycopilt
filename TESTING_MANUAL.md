@@ -103,3 +103,75 @@ Click the plugin icon to open the popup for each test.
 **Reporting Issues:**
 
 If any test case fails, note down the test case number, steps taken, actual result, and expected result. Include any console errors from the browser's developer tools (inspect the plugin popup) or the backend server terminal.
+
+## 5. Backend URL Configuration Testing
+
+These tests verify that the plugin correctly loads and uses the backend URL from `plugin/config.json`, and gracefully falls back to the default URL if the configuration is missing or invalid.
+
+**Prerequisites for this section:**
+*   Ensure you can start/stop your backend server and know its URL.
+*   Be comfortable creating/editing/deleting `plugin/config.json`.
+*   Know how to reload the plugin in your browser's developer mode.
+*   Have the browser's developer console open for the plugin popup to observe log messages.
+
+**Test Case 5.1: Using `config.json` with a (temporarily) invalid custom URL**
+*   **Setup:**
+    1.  Ensure your backend server IS running (e.g., on the default `http://localhost:5000`).
+    2.  In `plugin/` directory, create `config.json` (copy from `config.json.example` if needed).
+    3.  Edit `plugin/config.json` to set `backend_url` to a URL where no server is running, e.g., `http://localhost:9999`.
+    4.  Reload the plugin in your browser.
+*   **Action:**
+    1.  Open the plugin popup.
+    2.  Attempt to use a feature (e.g., Translate "Test" to "Spanish").
+*   **Expected Result:**
+    *   The plugin UI should show an error message indicating a failure to connect to the server (e.g., "Error: Could not connect to the server." or a network error).
+    *   The browser's developer console for the plugin popup should show an error related to fetching from `http://localhost:9999/api/translate`.
+    *   The console should also show a log "Backend URL loaded from config.json: http://localhost:9999".
+
+**Test Case 5.2: Fallback to default URL when `config.json` is missing**
+*   **Setup:**
+    1.  Ensure your backend server IS running on `http://localhost:5000`.
+    2.  In `plugin/` directory, ensure `config.json` does **not** exist (delete it if it does).
+    3.  Reload the plugin in your browser.
+*   **Action:**
+    1.  Open the plugin popup.
+    2.  Attempt to use a feature (e.g., Translate "Hello" to "French").
+*   **Expected Result:**
+    *   The translation should succeed, and the French translation for "Hello" should be displayed.
+    *   The browser's developer console should show a log message similar to "config.json not found. Using default backend URL: http://localhost:5000".
+
+**Test Case 5.3: Fallback to default URL when `config.json` is malformed**
+*   **Setup:**
+    1.  Ensure your backend server IS running on `http://localhost:5000`.
+    2.  In `plugin/` directory, create `config.json` with invalid JSON content (e.g., `{"backend_url": "http://localhost:5000", }` - note the trailing comma).
+    3.  Reload the plugin in your browser.
+*   **Action:**
+    1.  Open the plugin popup.
+    2.  Attempt to use a feature (e.g., Translate "Good day" to "German").
+*   **Expected Result:**
+    *   The translation should succeed.
+    *   The browser's developer console should show a warning similar to "Error loading or parsing config.json. Using default backend URL: http://localhost:5000" and include details of the parsing error.
+
+**Test Case 5.4: Fallback to default URL when `backend_url` key is missing in `config.json`**
+*   **Setup:**
+    1.  Ensure your backend server IS running on `http://localhost:5000`.
+    2.  In `plugin/` directory, create `config.json` with valid JSON but missing the `backend_url` key (e.g., `{"some_other_setting": "value"}`).
+    3.  Reload the plugin in your browser.
+*   **Action:**
+    1.  Open the plugin popup.
+    2.  Attempt to use a feature (e.g., Translate "Morning" to "Italian").
+*   **Expected Result:**
+    *   The translation should succeed.
+    *   The browser's developer console should show a warning similar to "config.json found, but backend_url is missing or invalid. Using default: http://localhost:5000".
+
+**Test Case 5.5: Using `config.json` with the actual default URL**
+*   **Setup:**
+    1.  Ensure your backend server IS running on `http://localhost:5000`.
+    2.  In `plugin/` directory, create `config.json` with the content: `{"backend_url": "http://localhost:5000"}`.
+    3.  Reload the plugin in your browser.
+*   **Action:**
+    1.  Open the plugin popup.
+    2.  Attempt to use a feature (e.g., Translate "Evening" to "Japanese").
+*   **Expected Result:**
+    *   The translation should succeed.
+    *   The browser's developer console should show a log "Backend URL loaded from config.json: http://localhost:5000".

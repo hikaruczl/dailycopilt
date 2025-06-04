@@ -104,6 +104,29 @@ This plugin is loaded as an unpacked extension in your browser.
     3.  In the file dialog, navigate to the `plugin/` directory and select the `manifest.json` file.
     4.  The plugin will be loaded temporarily and its icon should appear. (Note: Temporary add-ons in Firefox are removed when you close the browser unless you use `web-ext` for development).
 
+### Configuring the Backend URL (Optional)
+
+By default, the plugin attempts to connect to a backend server running at `http://localhost:5000`. If your backend server is running on a different URL or port, you can configure the plugin to use your custom address:
+
+1.  Navigate to the `plugin/` directory within the project.
+2.  Copy the example configuration file `config.json.example` to a new file named `config.json`:
+    ```bash
+    # If you are in the plugin/ directory
+    cp config.json.example config.json
+    ```
+3.  Open `plugin/config.json` in a text editor.
+4.  Modify the `backend_url` value to your backend server's address. For example:
+    ```json
+    {
+      "backend_url": "https://your-custom-backend.example.com"
+    }
+    ```
+5.  Save the `plugin/config.json` file.
+
+If `plugin/config.json` is not found, is malformed, or the `backend_url` is invalid, the plugin will default to using `http://localhost:5000`.
+
+**Note:** After creating or modifying `plugin/config.json`, you may need to reload the extension in your browser for the changes to take effect. You can usually do this from the browser's extensions page (e.g., by clicking the "reload" icon for the extension in Chrome Developer Mode).
+
 ### 3. Using the Plugin
 
 Once the backend is running and the plugin is loaded:
