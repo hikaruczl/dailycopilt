@@ -1,6 +1,7 @@
 import os
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
+from flask_cors import CORS # New import
 from .llm_factory import get_llm_service
 # Removed: from .llm_service import call_llm
 
@@ -15,6 +16,7 @@ if not load_dotenv(dotenv_path=dotenv_path):
 # load_dotenv doesn't overwrite existing env vars by default.
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}}) # Initialize CORS for /api/* routes
 
 @app.route('/')
 def home():

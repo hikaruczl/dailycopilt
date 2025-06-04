@@ -15,6 +15,10 @@ This document outlines the steps to manually test the functionality of the AI Pr
     *   Enable "Developer mode".
     *   Click "Load unpacked" (or equivalent) and select the `plugin/` directory from this project.
     *   The plugin icon should appear in your browser's toolbar.
+3.  **CORS Verification (During Functional Tests):**
+    *   With the backend now including CORS headers (via `Flask-CORS`), ensure that when you run the functional test cases below (Translation, Document Analysis, Search), there are **no** CORS-related errors in the browser's developer console for the plugin popup.
+    *   This is especially important if your backend server is configured via `plugin/config.json` to run on a different domain/port than the plugin's default `http://localhost:5000`.
+    *   If CORS is correctly configured on the backend and the plugin is making requests to the allowed `/api/*` routes, these operations should work smoothly without browser complaints about `Access-Control-Allow-Origin`. Pay attention to the console when first testing each feature.
 
 **Test Cases:**
 

@@ -87,6 +87,9 @@ The backend is a Python Flask server that handles LLM interactions.
         ```
         The backend server will start, typically on `http://localhost:5000`.
 
+        **Cross-Origin Resource Sharing (CORS):**
+        The backend is configured using `Flask-CORS` to allow cross-origin requests from any origin to the `/api/*` routes. This is necessary for the browser plugin (and other web applications) to interact with the API when served from a different domain or port (e.g., the plugin's `chrome-extension://` origin).
+
 ### 2. Frontend Plugin Setup (Loading the Extension)
 
 This plugin is loaded as an unpacked extension in your browser.
