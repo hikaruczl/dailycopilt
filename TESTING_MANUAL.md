@@ -119,15 +119,59 @@ Observe if the output quality or format differs significantly between providers 
     *   **Action:** Click "Search".
     *   **Expected Result:** The result area displays relevant information about Artificial Intelligence. Check for scrollability if the response is long.
 
-**4. General UI/UX**
+## 4. Tab Navigation Testing
 
-*   **Test Case 4.1: Responsiveness**
+This section verifies the functionality of the tabbed interface.
+
+**Test Case 4.1: Default Tab on Open**
+*   **Action:** Open the plugin popup.
+*   **Expected Result:**
+    *   The "Translate" tab button is visually marked as active.
+    *   The content for the "Translate" feature is visible.
+    *   Content for "Analyze Document" and "Search" should be hidden.
+
+**Test Case 4.2: Switching Tabs**
+*   **Action:**
+    1.  Click the "Analyze Document" tab button.
+    2.  Observe the UI.
+    3.  Click the "Search" tab button.
+    4.  Observe the UI.
+    5.  Click the "Translate" tab button.
+    6.  Observe the UI.
+*   **Expected Result:**
+    *   For each click, the corresponding tab button becomes visually active.
+    *   The content panel associated with the clicked tab becomes visible.
+    *   All other tab content panels are hidden.
+
+**Test Case 4.3: Functionality within Tabs**
+*   **Action:**
+    1.  Navigate to the "Translate" tab. Perform a successful translation (e.g., "Hello" to "Spanish").
+    2.  Navigate to the "Analyze Document" tab. Select a small `.txt` file and click "Upload and Analyze".
+    3.  Navigate to the "Search" tab. Enter a query (e.g., "What is AI?") and click "Search".
+*   **Expected Result:**
+    *   All operations should complete successfully within their respective tabs.
+    *   Results, loading messages, and error messages for each feature should be displayed correctly within the boundaries of that feature's tab panel.
+
+**Test Case 4.4: Input State Persistence on Tab Switch**
+*   **Action:**
+    1.  Navigate to the "Translate" tab.
+    2.  Type "Test input" into the main text area.
+    3.  Type "German" into the target language field. Do not click "Translate".
+    4.  Click the "Analyze Document" tab to switch away.
+    5.  Click back to the "Translate" tab.
+*   **Expected Result:**
+    *   The text "Test input" should still be present in the main text area.
+    *   The text "German" should still be present in the target language field.
+
+## 5. General UI/UX
+
+*   **Test Case 5.1: Responsiveness**
     *   **Action:** Open and close the plugin popup multiple times. Interact with different features.
     *   **Expected Result:** The UI remains responsive. No crashes or significant lag.
-*   **Test Case 4.2: Clarity of Messages**
+*   **Test Case 5.2: Clarity of Messages**
     *   **Action:** Trigger various success and error states for each feature.
     *   **Expected Result:** All messages (loading, success, error) are clear, user-friendly, and displayed in the correct style.
-*   **Test Case 4.3: Scrollability of Long Results**
+*   **Test Case 5.3: Scrollability of Long Results**
     *   **Action:** Perform actions that are expected to return long text (long translation, detailed search query, analysis of a moderately sized text file).
     *   **Expected Result:** The result areas for each feature become scrollable if the content exceeds the `max-height` (150px), and the entire content is accessible.
 
@@ -135,7 +179,7 @@ Observe if the output quality or format differs significantly between providers 
 
 If any test case fails, note down the test case number, steps taken, actual result, and expected result. Include any console errors from the browser's developer tools (inspect the plugin popup) or the backend server terminal.
 
-## 5. Backend URL Configuration Testing
+## 6. Backend URL Configuration Testing
 
 These tests verify that the plugin correctly loads and uses the backend URL from `plugin/config.json`, and gracefully falls back to the default URL if the configuration is missing or invalid.
 
@@ -145,7 +189,7 @@ These tests verify that the plugin correctly loads and uses the backend URL from
 *   Know how to reload the plugin in your browser's developer mode.
 *   Have the browser's developer console open for the plugin popup to observe log messages.
 
-**Test Case 5.1: Using `config.json` with a (temporarily) invalid custom URL**
+**Test Case 6.1: Using `config.json` with a (temporarily) invalid custom URL**
 *   **Setup:**
     1.  Ensure your backend server IS running (e.g., on the default `http://localhost:5000`).
     2.  In `plugin/` directory, create `config.json` (copy from `config.json.example` if needed).
@@ -159,7 +203,7 @@ These tests verify that the plugin correctly loads and uses the backend URL from
     *   The browser's developer console for the plugin popup should show an error related to fetching from `http://localhost:9999/api/translate`.
     *   The console should also show a log "Backend URL loaded from config.json: http://localhost:9999".
 
-**Test Case 5.2: Fallback to default URL when `config.json` is missing**
+**Test Case 6.2: Fallback to default URL when `config.json` is missing**
 *   **Setup:**
     1.  Ensure your backend server IS running on `http://localhost:5000`.
     2.  In `plugin/` directory, ensure `config.json` does **not** exist (delete it if it does).
@@ -171,7 +215,7 @@ These tests verify that the plugin correctly loads and uses the backend URL from
     *   The translation should succeed, and the French translation for "Hello" should be displayed.
     *   The browser's developer console should show a log message similar to "config.json not found. Using default backend URL: http://localhost:5000".
 
-**Test Case 5.3: Fallback to default URL when `config.json` is malformed**
+**Test Case 6.3: Fallback to default URL when `config.json` is malformed**
 *   **Setup:**
     1.  Ensure your backend server IS running on `http://localhost:5000`.
     2.  In `plugin/` directory, create `config.json` with invalid JSON content (e.g., `{"backend_url": "http://localhost:5000", }` - note the trailing comma).
@@ -183,7 +227,7 @@ These tests verify that the plugin correctly loads and uses the backend URL from
     *   The translation should succeed.
     *   The browser's developer console should show a warning similar to "Error loading or parsing config.json. Using default backend URL: http://localhost:5000" and include details of the parsing error.
 
-**Test Case 5.4: Fallback to default URL when `backend_url` key is missing in `config.json`**
+**Test Case 6.4: Fallback to default URL when `backend_url` key is missing in `config.json`**
 *   **Setup:**
     1.  Ensure your backend server IS running on `http://localhost:5000`.
     2.  In `plugin/` directory, create `config.json` with valid JSON but missing the `backend_url` key (e.g., `{"some_other_setting": "value"}`).
@@ -195,7 +239,7 @@ These tests verify that the plugin correctly loads and uses the backend URL from
     *   The translation should succeed.
     *   The browser's developer console should show a warning similar to "config.json found, but backend_url is missing or invalid. Using default: http://localhost:5000".
 
-**Test Case 5.5: Using `config.json` with the actual default URL**
+**Test Case 6.5: Using `config.json` with the actual default URL**
 *   **Setup:**
     1.  Ensure your backend server IS running on `http://localhost:5000`.
     2.  In `plugin/` directory, create `config.json` with the content: `{"backend_url": "http://localhost:5000"}`.

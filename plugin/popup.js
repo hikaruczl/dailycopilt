@@ -35,6 +35,50 @@ async function loadBackendConfig() {
 document.addEventListener('DOMContentLoaded', async function () {
     await loadBackendConfig(); // Load config first
 
+    // Tab switching logic
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            // Remove active class from all tab buttons and content
+            tabButtons.forEach(btn => btn.classList.remove('active'));
+            tabContents.forEach(content => content.classList.remove('active'));
+
+            // Add active class to the clicked button
+            button.classList.add('active');
+
+            // Add active class to the corresponding tab content
+            const tabId = button.getAttribute('data-tab');
+            const activeContent = document.getElementById(tabId);
+            if (activeContent) {
+                activeContent.classList.add('active');
+            } else {
+                console.error('Error: No tab content found for ID:', tabId);
+            }
+        });
+    });
+
+    // Ensure default active tab content is shown based on HTML classes
+    // This step is mostly a safeguard as CSS should handle initial state.
+    // However, explicitly activating the content for the initially active button
+    // ensures consistency if HTML classes were somehow incorrect on load.
+    const initialActiveButton = document.querySelector('.tab-button.active');
+    if (initialActiveButton) {
+        const initialTabId = initialActiveButton.getAttribute('data-tab');
+        const initialActiveContent = document.getElementById(initialTabId);
+        if (initialActiveContent) {
+            // Ensure all others are inactive
+            tabContents.forEach(content => {
+                if (content.id !== initialTabId) {
+                    content.classList.remove('active');
+                }
+            });
+            // Ensure the correct one is active
+            initialActiveContent.classList.add('active');
+        }
+    }
+
     // --- Translation ---
     const translateButton = document.getElementById('translate-button');
     const textToTranslateInput = document.getElementById('text-to-translate');
