@@ -1,33 +1,10 @@
 import os
 from .llm_interfaces import AbstractLLMService
-from .llm_openai import OpenAILLMService # Use the actual OpenAILLMService
-# We will import other specific LLM service implementations here once they are created.
-# from .llm_google import GoogleLLMService
-# from .llm_qwen import QwenLLMService
+from .llm_openai import OpenAILLMService
+from .llm_google import GoogleLLMService
+from .llm_qwen import QwenLLMService # Use the actual QwenLLMService
 
-# Placeholder implementations for Google and Qwen, to be replaced by actual classes
-class PlaceholderGoogleLLMService(AbstractLLMService):
-    def __init__(self, api_key: str, **kwargs):
-        super().__init__(api_key, **kwargs)
-        print(f"PlaceholderGoogleLLMService initialized with API key: {self.api_key[:5]}...")
-    def translate(self, text: str, target_language: str, source_language: str = "auto", model_preference: str = None) -> str:
-        return f"[Google Placeholder] Translated '{text}' to {target_language}"
-    def analyze_text(self, text: str, analysis_type: str = "summary", model_preference: str = None) -> str:
-        return f"[Google Placeholder] Analyzed '{text[:20]}...' as {analysis_type}"
-    def generate_response(self, prompt: str, context: str = None, model_preference: str = None) -> str:
-        return f"[Google Placeholder] Response for '{prompt}'"
-
-class PlaceholderQwenLLMService(AbstractLLMService):
-    def __init__(self, api_key: str, **kwargs):
-        super().__init__(api_key, **kwargs)
-        print(f"PlaceholderQwenLLMService initialized with API key: {self.api_key[:5]}...")
-    def translate(self, text: str, target_language: str, source_language: str = "auto", model_preference: str = None) -> str:
-        return f"[Qwen Placeholder] Translated '{text}' to {target_language}"
-    def analyze_text(self, text: str, analysis_type: str = "summary", model_preference: str = None) -> str:
-        return f"[Qwen Placeholder] Analyzed '{text[:20]}...' as {analysis_type}"
-    def generate_response(self, prompt: str, context: str = None, model_preference: str = None) -> str:
-        return f"[Qwen Placeholder] Response for '{prompt}'"
-# End of placeholder implementations
+# All placeholder classes have been removed.
 
 # Global variable to cache the LLM service instance
 _llm_service_instance = None
@@ -50,15 +27,13 @@ def get_llm_service() -> AbstractLLMService:
 
     if provider == "openai":
         api_key = os.environ.get("OPENAI_API_KEY")
-        service_class = OpenAILLMService # Use the actual implementation
+        service_class = OpenAILLMService
     elif provider == "google":
         api_key = os.environ.get("GOOGLE_API_KEY")
-        # service_class = GoogleLLMService # When implemented
-        service_class = PlaceholderGoogleLLMService # Using placeholder
+        service_class = GoogleLLMService
     elif provider == "qwen":
         api_key = os.environ.get("QWEN_API_KEY")
-        # service_class = QwenLLMService # When implemented
-        service_class = PlaceholderQwenLLMService # Using placeholder
+        service_class = QwenLLMService # Use the actual implementation
     else:
         raise ValueError(f"Unsupported LLM provider: {provider}. Supported providers are 'openai', 'google', 'qwen'.")
 

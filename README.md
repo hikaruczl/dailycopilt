@@ -68,19 +68,48 @@ The backend is a Python Flask server that handles LLM interactions.
         ```bash
         pip install -r requirements.txt
         ```
-    5.  **Set your OpenAI API Key:**
-        The backend requires an OpenAI API key to be configured in a `.env` file.
+        (This installs Flask, python-dotenv, and the SDKs for OpenAI, Google Gemini, and Alibaba Qwen).
+
+    5.  **Set your API Keys and Choose Provider:**
+        The backend requires API keys for the LLM services you intend to use. These are configured in the `backend/.env` file.
+
         *   Navigate to the `backend/` directory if you are not already there (you should be if following these steps sequentially).
-        *   Copy the example environment file:
+        *   Copy `backend/.env.example` to `backend/.env` if you haven't already:
             ```bash
             cp .env.example .env
             ```
-        *   Open the newly created `backend/.env` file in a text editor.
-        *   Replace `your_api_key_here` with your actual OpenAI API key. The line should look like:
-            ```
-            OPENAI_API_KEY="sk-YourActualOpenAIKeyHerexxxx"
-            ```
-        **Important:** Ensure this `.env` file (which contains your secret key) is never committed to version control. The project's `.gitignore` file is already configured to ignore `.env` files.
+        *   Open `backend/.env` in a text editor.
+
+        *   **Choose your LLM Provider:**
+            Set the `LLM_PROVIDER` variable to one of `"openai"`, `"google"`, or `"qwen"`.
+            Example: `LLM_PROVIDER="google"` (The default in `.env.example` is "openai").
+
+        *   **Configure API Key(s):**
+            You only need to provide the API key for the `LLM_PROVIDER` you have selected. However, you can fill in all keys if you plan to switch between them.
+
+            *   **For OpenAI:**
+                Set `OPENAI_API_KEY` with your key from [OpenAI Platform](https://platform.openai.com/signup/).
+                Default model used: `gpt-3.5-turbo`.
+                ```
+                OPENAI_API_KEY="sk-YourActualOpenAIKeyHere..."
+                ```
+
+            *   **For Google Gemini:**
+                Set `GOOGLE_API_KEY` with your key from [Google AI Studio](https://aistudio.google.com/app/apikey) or Google Cloud Console.
+                Default model used: `gemini-1.5-flash-latest`.
+                ```
+                GOOGLE_API_KEY="YourActualGoogleApiKeyHere..."
+                ```
+
+            *   **For Alibaba Qwen (Tongyi via Dashscope):**
+                Set `QWEN_API_KEY` with your API Key from the [Dashscope Console](https://help.aliyun.com/document_detail/2512185.html). The service will use this key to configure the Dashscope SDK.
+                Default model used: `qwen-turbo`.
+                ```
+                QWEN_API_KEY="sk-YourActualDashscopeApiKeyHere..."
+                ```
+                (Note: The Dashscope SDK also typically recognizes the `DASHSCOPE_API_KEY` environment variable if set globally, but the application primarily uses the key provided via `QWEN_API_KEY` to configure the SDK at runtime.)
+
+        **Important:** Ensure the `.env` file (which contains your secret keys) is never committed to version control. The project's `.gitignore` file is already configured to ignore `.env` files.
     6.  **Run the Flask server:**
         ```bash
         python -m app.main

@@ -6,9 +6,15 @@ This document outlines the steps to manually test the functionality of the AI Pr
 
 1.  **Backend Server Running:**
     *   Navigate to the `backend/` directory.
-    *   Ensure Python dependencies are installed: `pip install -r requirements.txt`.
-    *   Set the `OPENAI_API_KEY` environment variable: `export OPENAI_API_KEY='your_openai_api_key'`.
+    *   Ensure Python dependencies are installed: `pip install -r requirements.txt` (this includes Flask, python-dotenv, and SDKs for OpenAI, Google, and Qwen).
+    *   **Configure LLM Provider and API Key(s) in `backend/.env`:**
+        1.  If it doesn't exist, copy `.env.example` to `.env` in the `backend/` directory.
+        2.  Edit `backend/.env` to:
+            *   Set `LLM_PROVIDER` to your desired provider: `"openai"`, `"google"`, or `"qwen"`.
+            *   Ensure the corresponding API key for the chosen provider is correctly set (e.g., `OPENAI_API_KEY`, `GOOGLE_API_KEY`, or `QWEN_API_KEY`).
+            *   Refer to the main `README.md` for details on obtaining API keys.
     *   Run the backend server: `python -m app.main`. (It should be running on `http://localhost:5000`).
+    *   The server will load the selected provider based on the `.env` configuration. Check the server startup logs for any warnings related to API key loading if issues occur.
 2.  **Plugin Loaded in Browser:**
     *   Open your browser (e.g., Chrome, Firefox).
     *   Go to the extensions page (e.g., `chrome://extensions` or `about:debugging#/runtime/this-firefox`).
@@ -25,6 +31,13 @@ This document outlines the steps to manually test the functionality of the AI Pr
 Click the plugin icon to open the popup for each test.
 
 **1. Translation Feature**
+
+**Note on LLM Providers:** These tests should ideally be performed for each supported LLM provider (OpenAI, Google Gemini, Alibaba Qwen) to ensure consistent functionality. To test a specific provider:
+1.  Edit `backend/.env`.
+2.  Set `LLM_PROVIDER` to your desired provider (e.g., "openai", "google", "qwen").
+3.  Ensure the corresponding API key for that provider (e.g., `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `QWEN_API_KEY`) is correctly filled in `backend/.env`.
+4.  Restart the backend server to apply the changes.
+Observe if the output quality or format differs significantly between providers and note any unexpected behavior.
 
 *   **Test Case 1.1: Successful Translation**
     *   **Input Text:** `Hello, how are you?`
@@ -48,6 +61,13 @@ Click the plugin icon to open the popup for each test.
     *   **Expected Result:** The result area displays the German translation. The area should be scrollable if the text is long.
 
 **2. Document Analysis Feature**
+
+**Note on LLM Providers:** These tests should ideally be performed for each supported LLM provider (OpenAI, Google Gemini, Alibaba Qwen) to ensure consistent functionality. To test a specific provider:
+1.  Edit `backend/.env`.
+2.  Set `LLM_PROVIDER` to your desired provider (e.g., "openai", "google", "qwen").
+3.  Ensure the corresponding API key for that provider (e.g., `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `QWEN_API_KEY`) is correctly filled in `backend/.env`.
+4.  Restart the backend server to apply the changes.
+Observe if the output quality or format differs significantly between providers and note any unexpected behavior.
 
 *   **Test Case 2.1: Successful Analysis (Supported File - .txt)**
     *   **Action:**
@@ -78,6 +98,13 @@ Click the plugin icon to open the popup for each test.
     *   **Expected Result:** The document is processed, and an analysis is provided. (Verify backend doesn't crash, and if truncation message appears from backend, it's handled).
 
 **3. Intelligent Search Feature**
+
+**Note on LLM Providers:** These tests should ideally be performed for each supported LLM provider (OpenAI, Google Gemini, Alibaba Qwen) to ensure consistent functionality. To test a specific provider:
+1.  Edit `backend/.env`.
+2.  Set `LLM_PROVIDER` to your desired provider (e.g., "openai", "google", "qwen").
+3.  Ensure the corresponding API key for that provider (e.g., `OPENAI_API_KEY`, `GOOGLE_API_KEY`, `QWEN_API_KEY`) is correctly filled in `backend/.env`.
+4.  Restart the backend server to apply the changes.
+Observe if the output quality or format differs significantly between providers and note any unexpected behavior.
 
 *   **Test Case 3.1: Successful Search**
     *   **Search Query:** `What are the benefits of unit testing?`
